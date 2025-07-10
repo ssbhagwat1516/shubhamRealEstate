@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shubham Real Estate</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: 'Arial', sans-serif; }
+    .nav-link { transition: color 0.3s ease; }
+    .nav-link:hover { color: #1d4ed8; }
+    .hero-section {
+      background-image: url('https://source.unsplash.com/random/1600x900/?real-estate');
+      background-size: cover;
+      background-position: center;
+    }
+    .modal, .admin-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content, .admin-modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+    }
+    #adminDashboard { display: none; }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Navigation -->
+<nav class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">Shubham Real Estate</h1>
+    <div class="space-x-6">
+      <a href="#home" class="nav-link text-gray-600 hover:text-blue-600">Home</a>
+      <a href="#properties" class="nav-link text-gray-600 hover:text-blue-600">Properties</a>
+      <a href="#services" class="nav-link text-gray-600 hover:text-blue-600">Services</a>
+      <a href="#about" class="nav-link text-gray-600 hover:text-blue-600">About</a>
+      <a href="#contact" class="nav-link text-gray-600 hover:text-blue-600">Contact</a>
+      <button id="adminLoginBtn" onclick="openAdminModal()" class="text-gray-600 hover:text-blue-600">Admin Login</button>
+      <button id="adminLogoutBtn" onclick="logout()" class="hidden text-gray-600 hover:text-blue-600">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Home -->
+<section id="home" class="hero-section py-20 text-center text-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-bold mb-4">Welcome to Shubham Real Estate</h2>
+    <p class="text-lg mb-6">Explore properties and real estate services with astrology-backed success.</p>
+    <a href="#properties" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">View Properties</a>
+  </div>
+</section>
+
+<!-- Properties -->
+<section id="properties" class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Property Details</h2>
+    <div id="propertyList" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"></div>
+  </div>
+</section>
+
+<!-- Admin Dashboard -->
+<section id="adminDashboard" class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Admin Dashboard</h2>
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+      <h3 class="text-xl font-semibold mb-4">Add New Property</h3>
+      <form id="propertyForm">
+        <div class="mb-4">
+          <label for="propertyName" class="block text-gray-600 mb-2">Property Name</label>
+          <input type="text" id="propertyName" class="w-full p-2 border rounded" required>
+        </div>
+        <div class="mb-4">
+          <label for="propertyDescription" class="block text-gray-600 mb-2">Description</label>
+          <textarea id="propertyDescription" class="w-full p-2 border rounded" required></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="propertyImage" class="block text-gray-600 mb-2">Image URL</label>
+          <input type="url" id="propertyImage" class="w-full p-2 border rounded" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Property</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Property Modal -->
+<div id="propertyModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalPropertyName" class="text-xl font-bold mb-4"></h3>
+    <p id="modalPropertyDescription" class="text-gray-600 mb-4"></p>
+    <img id="modalPropertyImage" class="w-full h-48 object-cover rounded-md mb-4" alt="Property">
+    <button onclick="closeModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Close</button>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminModal" class="admin-modal">
+  <div class="admin-modal-content">
+    <h3 class="text-xl font-bold mb-4">Admin Login</h3>
+    <form id="adminLoginForm">
+      <div class="mb-4">
+        <label for="username" class="block text-gray-600 mb-2">Email</label>
+        <input type="email" id="username" class="w-full p-2 border rounded" required>
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-gray-600 mb-2">Password</label>
+        <input type="password" id="password" class="w-full p-2 border rounded" required>
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Login</button>
+      <button type="button" onclick="closeAdminModal()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 ml-2">Cancel</button>
+    </form>
+    <p id="loginError" class="text-red-600 mt-4 hidden">Invalid email or password.</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white text-center py-6">
+  <p>© 2025 Shubham Real Estate. All rights reserved.</p>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- JS Logic -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCYcDpTMFKnE0KNTQAYZrqxfZ8-Th-c5b0",
+    authDomain: "shubham-real-estate.firebaseapp.com",
+    projectId: "shubham-real-estate",
+    storageBucket: "shubham-real-estate.appspot.com",
+    messagingSenderId: "95849223974",
+    appId: "1:95849223974:web:d72b61f742d19227fc93e7"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Navigation scroll
+  document.querySelectorAll('.nav-link').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Auth logic
+  document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => {
+        closeAdminModal();
+        document.getElementById('adminLoginBtn').classList.add('hidden');
+        document.getElementById('adminLogoutBtn').classList.remove('hidden');
+        document.getElementById('adminDashboard').style.display = 'block';
+        alert('Admin login successful!');
+      })
+      .catch(() => {
+        document.getElementById('loginError').style.display = 'block';
+      });
+  });
+
+  function logout() {
+    auth.signOut().then(() => {
+      document.getElementById('adminLoginBtn').classList.remove('hidden');
+      document.getElementById('adminLogoutBtn').classList.add('hidden');
+      document.getElementById('adminDashboard').style.display = 'none';
+      alert('Logged out successfully!');
+    });
+  }
+
+  function openAdminModal() {
+    document.getElementById('adminModal').style.display = 'flex';
+  }
+
+  function closeAdminModal() {
+    document.getElementById('adminModal').style.display = 'none';
+  }
+
+  function openModal(name, description, image) {
+    document.getElementById('modalPropertyName').textContent = name;
+    document.getElementById('modalPropertyDescription').textContent = description;
+    document.getElementById('modalPropertyImage').src = image;
+    document.getElementById('propertyModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('propertyModal').style.display = 'none';
+  }
+
+  document.getElementById('propertyForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const name = document.getElementById('propertyName').value;
+    const description = document.getElementById('propertyDescription').value;
+    const image = document.getElementById('propertyImage').value;
+    db.collection('properties').add({
+      name, description, image,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      alert('Property added successfully!');
+      document.getElementById('propertyForm').reset();
+      loadProperties();
+    }).catch(error => {
+      alert('Failed to add property.');
+      console.error(error);
+    });
+  });
+
+  function loadProperties() {
+    const propertyList = document.getElementById('propertyList');
+    propertyList.innerHTML = '';
+    db.collection('properties').orderBy('createdAt', 'desc').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const property = doc.data();
+        const div = document.createElement('div');
+        div.className = 'bg-gray-100 p-4 rounded-lg shadow-md';
+        div.innerHTML = `
+          <img src="${property.image}" alt="${property.name}" class="w-full h-48 object-cover rounded-md">
+          <h3 class="text-xl font-semibold mt-4">${property.name}</h3>
+          <p class="text-gray-600">${property.description}</p>
+          <button onclick="openModal('${property.name}', '${property.description}', '${property.image}')" class="text-blue-600 hover:underline mt-2">View Details</button>
+        `;
+        propertyList.appendChild(div);
+      });
+    });
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      document.getElementById('adminLoginBtn').classList.add('hidden');
+      document.getElementById('adminLogoutBtn').classList.remove('hidden');
+      document.getElementById('adminDashboard').style.display = 'block';
+    } else {
+      document.getElementById('adminLoginBtn').classList.remove('hidden');
+      document.getElementById('adminLogoutBtn').classList.add('hidden');
+      document.getElementById('adminDashboard').style.display = 'none';
+    }
+  });
+
+  loadProperties();
+</script>
+</body>
+</html>
