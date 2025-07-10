@@ -1,0 +1,223 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shubham Real Estate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f4f4f4;
+        }
+        .properties, .services, .about, .contact, .admin {
+            padding: 20px;
+            margin: 20px;
+        }
+        .property-grid, .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .property-card, .service-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Shubham Real Estate</h1>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#properties">Properties</a>
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+            <a href="#admin" onclick="openAdminModal()">Admin Login</a>
+            <a href="#logout">Logout</a>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <h2>Welcome to Shubham Real Estate</h2>
+        <p>Explore properties and real estate services.</p>
+        <a href="#properties"><button>View Properties</button></a>
+    </section>
+
+    <section id="properties" class="properties">
+        <h2>Property Details</h2>
+        <p>Explore our curated selection of properties.</p>
+        <div class="property-grid">
+            <div class="property-card">
+                <img src="" alt="Property Image" style="width:100%; height: auto;">
+                <h3>Property Name</h3>
+                <p>Property Description</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="admin" class="admin">
+        <h2>Admin Dashboard</h2>
+        <div>
+            <h3>Add New Property</h3>
+            <form>
+                <label for="property-name">Property Name</label>
+                <input type="text" id="property-name" name="property-name" required>
+
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="image-url">Image URL</label>
+                <input type="url" id="image-url" name="image-url" required>
+
+                <button type="submit">Add Property</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <h2>Our Real Estate Services</h2>
+        <p>Comprehensive solutions for buying, selling, and renting properties.</p>
+        <div class="service-grid">
+            <div class="service-card">
+                <h3>Buying</h3>
+                <p>Find your dream home with our expert guidance.</p>
+            </div>
+            <div class="service-card">
+                <h3>Selling</h3>
+                <p>Sell your property quickly and at the best price.</p>
+            </div>
+            <div class="service-card">
+                <h3>Renting</h3>
+                <p>Explore rental options tailored to your needs.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <h2>About Shubham Real Estate</h2>
+        <p>We are a trusted real estate brokerage, committed to delivering exceptional service.</p>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>Reach out via WhatsApp, Instagram, or visit our office.</p>
+        <div>
+            <a href="https://wa.me/1234567890"><img src="whatsapp-icon.png" alt="WhatsApp"></a>
+            <a href="https://instagram.com/shubhamrealestate"><img src="instagram-icon.png" alt="Instagram"></a>
+            <a href="https://maps.google.com"><img src="location-icon.png" alt="Location"></a>
+        </div>
+    </section>
+
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <form>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit">Login</button>
+                <button type="button" onclick="closeAdminModal()">Cancel</button>
+            </form>
+            <p style="color: red; display: none;" id="error-message">Invalid email or password.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Shubham Real Estate. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function openAdminModal() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
