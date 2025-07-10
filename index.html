@@ -206,13 +206,14 @@
     <script>
         // Firebase configuration (replace with your Firebase project config)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+  apiKey: "AIzaSyCYcDpTMFKnE0KNTQAYZrqxfZ8-Th-c5b0",
+  authDomain: "shubham-real-estate.firebaseapp.com",
+  projectId: "shubham-real-estate",
+  storageBucket: "shubham-real-estate.firebasestorage.app",
+  messagingSenderId: "95849223974",
+  appId: "1:95849223974:web:d72b61f742d19227fc93e7",
+  measurementId: "G-3243Y379PK"
+};
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -251,8 +252,10 @@
         // Admin login
         document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const email = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('username').value.trim();
+            console.log("Email entered:", email);
+            const password = document.getElementById('password').value.trim();
+            console.log("Password entered:", password);
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
                     closeAdminModal();
